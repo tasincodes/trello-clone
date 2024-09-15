@@ -1,5 +1,6 @@
 const userModel = require("../user/model");
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
 const createUser = async (username, email, password) => {
@@ -12,10 +13,10 @@ const createUser = async (username, email, password) => {
                 error: "user already exists"
             }
         }
-        const hashedPassword = await bcrypt.hash(password,10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new userModel({
-            username, email, password:hashedPassword
+            username, email, password: hashedPassword
         })
         await newUser.save();
         return {
@@ -24,24 +25,30 @@ const createUser = async (username, email, password) => {
     }
     catch (err) {
         console.log(err)
-        return { success: false, error: err.message||"user creation failed" }
+        return { success: false, error: err.message || "user creation failed" }
     }
 }
 
 
-const updateUserService = async (user_id, userData) => {
+const loginUser = async (email, password) => {
     try {
-        const uodatedUser = await userModel.findByIdAndUpdate(user_id, userData, { new: true });
-        if (!uodatedUser) {
-            return { status: 404, message: "user couldnt be updated" }
+        const existingUser = await userModel.findOne({ email });
+        if (!existingUser) {
+            throw new Error("User not found");
         }
-        return {
-            status: 200, message: "user updated success", user: uodatedUser
+        else {
+            const isMatch = await bcrypt.compare(password, existingUser.password)
+            if (!isMatch) {
+                throw new Error("Invalid Credentials");
+            }
+            const accessToken = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            return accessToken;
         }
     }
-    catch (err) {
-        throw new Error("couldnt update user", err);
+    catch (error) {
+        console.log(error)
     }
+
 }
 
 
@@ -49,5 +56,5 @@ const updateUserService = async (user_id, userData) => {
 
 module.exports = {
     createUser,
-    updateUserService
+    loginUser
 }

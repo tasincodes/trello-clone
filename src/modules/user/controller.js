@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userService = require('../user/service');
 
-const userController = async (req, res) => {
+const UserRegister = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
@@ -29,12 +29,27 @@ const userController = async (req, res) => {
     }
 }
 
-const updateUserControlller = async (req, res) => {
-    const userid = req.params;
 
+const loginHandler = async(req,res)=>{
+const {email,password}= req.body;
+try{
+    const token = await userService.loginUser(email,password);
+    if(!token){
+        throw new Error("couldnt find token")
+    }
+    res.status(200).json({token})
+}
+catch(error){
+    res.status(500).json({
+        message:"internal server error",
+        error:error.message
+    })
+}
 }
 
-router.post('/createUser', userController);
+
+router.post('/createUser', UserRegister);
+router.post('/loginUser',loginHandler);
 
 
 
