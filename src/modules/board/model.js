@@ -14,8 +14,7 @@ const boradSchema = new mongoose.Schema(
         },
         tasks:{
             type : mongoose.Schema.Types.ObjectId,
-            ref:'task',
-            required : true
+            ref:'task'
         }
     }
 )
