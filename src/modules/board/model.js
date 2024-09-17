@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const boradSchema = new mongoose.Schema(
+const boardSchema = new mongoose.Schema(
 
     {
         name :{
@@ -12,11 +12,11 @@ const boradSchema = new mongoose.Schema(
             ref:'User',
             required:true
         },
-        tasks:{
+        tasks:[{
             type : mongoose.Schema.Types.ObjectId,
             ref:'task'
-        }
+        }]
     }
 )
-const Board = mongoose.model('Board',boradSchema);
+const Board = mongoose.model('Board',boardSchema);
 module.exports= Board;

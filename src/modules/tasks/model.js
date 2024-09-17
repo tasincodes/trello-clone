@@ -9,9 +9,9 @@ const taskSchema = new mongoose.Schema({
         type: String,
 
     },
-    borad: {
-        type: String,
-        required: mongoose.Schema.Types.ObjectId,
+    board: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
         ref: 'Board'
     }
 
