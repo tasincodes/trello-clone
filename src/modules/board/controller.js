@@ -10,8 +10,9 @@ const boardCreateController = async (req, res) => {
     const { name } = req.body;
     const userId = req.user;
     try {
-        const newBoard = await boardService.createBoard(name, userId)
-        res.status(200).json({ newBoard: newBoard })
+        const newBoard = await boardService.createBoard(name, userId);
+        req.io.emit('boardCreated',{board:newBoard});
+        res.status(200).json({ newBoard: newBoard });
 
     } catch (error) {
         console.log(error);
